@@ -89,8 +89,16 @@ int Hokuyo::read_file(Scan *data, long &timeStamp) {
         }
         inFile.read((char *)&y, sizeof(int));
 
+        if (x == 0 && y == 0)
+            continue;
+
         data->pts[i].x = x;
         data->pts[i].y = y;
+        data->pts[i].objID = 0;
+        data->pts[i].dist = (int)sqrt(x * x + y * y);
+        data->pts[i].angle = atan2(y, x);
+        data->pts[i].x_img = round(y * scaley + _WIDTH / 2.0);
+        data->pts[i].y_img = round(x * scalex);
 
         // cout << "(" << x << "," << y << ")" << endl;
         i++;
@@ -113,6 +121,9 @@ void Hokuyo::convertXY(Scan *data) {
         double radian = urg.index2rad(i);
         data->pts[i].x = static_cast<int>(l * cos(radian));
         data->pts[i].y = static_cast<int>(l * sin(radian));
+        data->pts[i].objID = 0;
+        data->pts[i].dist = l;
+        data->pts[i].angle = radian;
     }
 
     data->size = data_n;

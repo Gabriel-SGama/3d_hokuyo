@@ -13,12 +13,12 @@
 // #define HOKUYO_READER 0
 // #define FILE_READER 1
 
-// typedef struct points {
+// typedef struct Points {
 //     int x, y;
-// } points;
+// } Points;
 
 // typedef struct Scan {
-//     std::vector<points> pts;
+//     std::vector<Points> pts;
 //     int size, max_size;
 // } Scan;
 

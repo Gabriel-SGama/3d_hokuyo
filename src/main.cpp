@@ -16,6 +16,7 @@
 #include "headers/Connection_information.h"
 #include "headers/Const.hpp"
 #include "headers/Hokuyo.hpp"
+#include "headers/Logic.hpp"
 #include "headers/Viewer.hpp"
 #include "math_utilities.h"
 
@@ -31,6 +32,7 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
     Hokuyo* hokuyo;
+    Logic* logic = new Logic();
     Scan* data = new Scan();
     Viewer* viewer = new Viewer();
     long timeStamp = 0;
@@ -50,8 +52,10 @@ int main(int argc, char* argv[]) {
 
     // hokuyo->setWrite("test2.dat", max_size);
     cout << "starting..." << endl;
+    // hokuyo->getData(data, timeStamp);  // clear zeros -> still zeros
     while (hokuyo->getData(data, timeStamp)) {
-        viewer->updateScreen(data);
+        logic->defineLimit(data);
+        viewer->updateScreens(data, logic->getLineRep());
         // hokuyo->writeFile(data);
     }
 }
