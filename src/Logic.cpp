@@ -248,7 +248,17 @@ void Logic::defineLimit(Scan* data) {
                 float a = num / den;
                 float b = my - a * mx;
 
-                // float y_end = a * maxX + b;
+                if (abs(maxX - minX) > abs(maxY - minY)) {
+                    lineRep->lines[objID].y_start = a * minX + b;
+                    lineRep->lines[objID].y_end = a * maxX + b;
+                    lineRep->lines[objID].x_start = minX;
+                    lineRep->lines[objID].x_end = maxX;
+                } else {
+                    lineRep->lines[objID].y_start = minY;
+                    lineRep->lines[objID].y_end = maxY;
+                    lineRep->lines[objID].x_start = (minY - b) / a;
+                    lineRep->lines[objID].x_end = (maxY - b) / a;
+                }
 
                 // cout << "a: " << a << " b: " << b << " minX: " << minX << " maxX: " << maxX << " objID" << objID << endl;
 

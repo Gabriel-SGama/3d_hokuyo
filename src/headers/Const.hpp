@@ -13,8 +13,8 @@
 #define HOKUYO_READER 0
 #define FILE_READER 1
 
-#define _HEIGHT 800
-#define _WIDTH 800
+#define _HEIGHT 400
+#define _WIDTH 400
 #define _MAX_DIST 4000.0
 
 #define _MATCH_HEIGHT 200
@@ -23,20 +23,27 @@
 #define FULL_WIDTH 1920
 #define FULL_HEIGHT 1080
 
+#define _VISION_ANGLE 45
+
 #define _MAX_ANGLE_DIFF 0.1
 #define _MAX_DIST_DIFF 70  // mm
 #define _MIN_PTS_2OBJ 20
 
 #define _MATCHING_CENTER_DIST 15
 
-const float scalex = _WIDTH / (2 * _MAX_DIST);
-const float scaley = _HEIGHT / (2 * _MAX_DIST);
+const float scalex = _HEIGHT / (2 * _MAX_DIST);
+const float scaley = _WIDTH / (_MAX_DIST * sin(_VISION_ANGLE * M_PI / 180.0));
+// const float scaley = _HEIGHT / (2 * _MAX_DIST);
 
 const float scaleBright = 255.0 / _MAX_DIST;
-// const float hkAngle = 15.0 * 3.14159265358979323846 / 180.0;
+const float hkAngle = 15.0 * M_PI / 180.0;
+
+const float angle_sin = sin(hkAngle);
+const float angle_cos = cos(hkAngle);
 
 typedef struct Points {
-    int x, y, dist;
+    int real_x, dist;  // 3d dimension (angle pre defined)
+    int x, y;          // converted to the xy plane
     int x_img, y_img;
     float angle;
     int objID;
@@ -47,9 +54,12 @@ typedef struct Line {
     float mx, my;  // mean cord values
     float std;
     float resi;
+    float x_start, x_end, y_start, y_end;
+
     int minX, maxX;
     int minY, maxY;
     int objID;
+
     bool niceLine;
 } Line;
 
@@ -70,3 +80,12 @@ typedef struct Trajectory {
     float maxx, maxy;
     float minx, miny;
 } Trajectory;
+
+typedef struct objects3d {
+    int lastObjID;
+
+    float avg_angle;
+    float mx, my;
+    float avg_width;
+
+} objects3d;

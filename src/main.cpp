@@ -53,27 +53,31 @@ int main(int argc, char* argv[]) {
     max_size = hokuyo->getMaxSize();
     data->pts.resize(max_size);
 
-    // hokuyo->setWrite("test2.dat", max_size);
+    // hokuyo->setWrite("wall_plane_v2.dat", max_size);
     cout << "starting..." << endl;
     // hokuyo->getData(data, timeStamp);  // clear zeros -> still zeros
 
-    LineRep* prevLine = new LineRep();
-    LineRep* currLine;
+    LineRep* prevRep = new LineRep();
+    LineRep* currRep;
 
     vector<int> matchesIdx;
 
     Trajectory* trajectory;
 
     while (hokuyo->getData(data, timeStamp)) {
+        // hokuyo->writeFile(data);
         // LOGIC
         logic->defineLimit(data);
-        currLine = logic->getLineRep();
-        matchesIdx = hist->matching(prevLine, currLine);
+        currRep = logic->getLineRep();
+        matchesIdx = hist->matching(prevRep, currRep);
 
         // VISUALIZATION
-        hist->updateTrajectory(prevLine, currLine, matchesIdx);
-        viewer->updateScreens(data, prevLine, currLine, matchesIdx, hist->getTraj());
+        hist->updateTrajectory(prevRep, currRep, matchesIdx);
+        hist->updateVision3d(prevRep, currRep, matchesIdx);
 
-        *prevLine = *currLine;  // clone content
+        viewer->updateScreens(data, prevRep, currRep, matchesIdx, hist->getTraj());
+
+        *prevRep = *currRep;  // clone content
+        cout << "scalex: " << scalex << " | scaley: " << scaley << endl;
     }
 }

@@ -103,3 +103,22 @@ void History::updateTrajectory(LineRep* prevLines, LineRep* currLines, vector<in
     cout << "last_x: " << last_x << " | y: " << last_y << endl;
     trajectory->traj_list.push_back(cv::Point2f(last_x, last_y));
 }
+
+void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int> matchesIdx) {
+    if (objs.empty()) {  // adds current Lines as objs
+        for (int i = 0; i < currLines->size; i++) {
+            if (!currLines->lines[i].niceLine) continue;
+
+            objects3d currObj;
+
+            currObj.avg_angle = currLines->lines[i].a;
+            currObj.lastObjID = currLines->lines[i].objID;
+            currObj.mx = currLines->lines[i].mx;
+            currObj.my = currLines->lines[i].my;
+
+            currObj.avg_width = currLines->lines[i].maxX - currLines->lines[i].minX;
+        }
+
+        return;
+    }
+}

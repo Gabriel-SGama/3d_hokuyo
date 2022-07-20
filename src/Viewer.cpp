@@ -10,18 +10,6 @@
 using namespace std;
 using namespace cv;
 
-// void getScreenResolution(int& width, int& height) {
-// #if WIN32
-//     width = (int)GetSystemMetrics(SM_CXSCREEN);
-//     height = (int)GetSystemMetrics(SM_CYSCREEN);
-// #else
-//     Display* disp = XOpenDisplay(NULL);
-//     Screen* scrn = DefaultScreenOfDisplay(disp);
-//     width = scrn->width;
-//     height = scrn->height;
-// #endif
-// }'
-
 Viewer::Viewer() {
     cPName = "current Points";
     cPFtName = "filtered points";
@@ -74,8 +62,8 @@ void Viewer::updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, 
     updateLinesScreen(currRep);
     updateTrajScreen(trajectory);
     updateMatchScreen(prevRep, currRep, matchesIDx);
-    // this->update3DVis(points_mm);
-    waitKey(0);
+    // update3DVis(points_mm);
+    waitKey(30);
 }
 
 void Viewer::updateReadScreen(Scan* points_mm) {
@@ -84,13 +72,18 @@ void Viewer::updateReadScreen(Scan* points_mm) {
 
     currPoints.setTo(0);
 
+    cout << "updating reading screen" << endl;
+    cout << "points size: " << points_mm->size << endl;
+
     for (int i = 0; i < points_mm->size; i++) {
         int x = points_mm->pts[i].x_img;
         int y = points_mm->pts[i].y_img;
-
+        // cout << "read xy" << endl;
         circle(currPoints, Point(x, y), 1, Scalar(255), FILLED);
+        // cout << "draw circle" << endl;
     }
 
+    cout << "show img" << endl;
     imshow(cPName, currPoints);
 }
 
@@ -146,21 +139,15 @@ void Viewer::updateLinesScreen(LineRep* lineRep) {
         int minY = lineRep->lines[i].minY;
         int maxY = lineRep->lines[i].maxY;
 
-        if (abs(maxX - minX) > abs(maxY - minY)) {
-            y_start = lineRep->lines[i].a * minX + lineRep->lines[i].b;
-            y_end = lineRep->lines[i].a * maxX + lineRep->lines[i].b;
-            x_start = minX;
-            x_end = maxX;
-        } else {
-            y_start = minY;
-            y_end = maxY;
-            x_start = (minY - lineRep->lines[i].b) / lineRep->lines[i].a;
-            x_end = (maxY - lineRep->lines[i].b) / lineRep->lines[i].a;
-        }
+        float y_start = lineRep->lines[i].y_start;
+        float y_end = lineRep->lines[i].y_end;
+        float x_start = lineRep->lines[i].x_start;
+        float x_end = lineRep->lines[i].x_end;
 
         // cout << "ptx: (" << minX << "," << lineRep->lines[i].b << ")" << endl;
         // cout << "pty: (" << lineRep->lines[i].maxX << "," << y_end << ")" << endl;
         // if (lineRep->lines[i].niceLine)
+
         int objID = lineRep->lines[i].objID;
         line(lineImg, cv::Point2d(x_start, y_start), cv::Point2d(x_end, y_end), Scalar((int)hScale * lineRep->lines[i].objID, S, V), 2, FILLED);
 
@@ -187,12 +174,14 @@ void Viewer::updateTrajScreen(Trajectory* trajectory) {
     float scaleTrajx = _WIDTH / (2.0 * lenx);
     float scaleTrajy = _HEIGHT / (2.0 * leny);
 
+    float scaleTraj = scaleTrajx < scaleTrajy ? scaleTrajx : scaleTrajy;
+
     cout << "scaleTrajx: " << scaleTrajx << endl;
 
     std::list<cv::Point2f>::iterator it;
     for (it = trajectory->traj_list.begin(); it != trajectory->traj_list.end(); ++it) {
-        cout << "x: " << it->x * scaleTrajx + centerx << " | y:" << it->y * scaleTrajy + centery << endl;
-        circle(trajImg, Point(it->x * scaleTrajx + centerx, it->y * scaleTrajy + centery), 4, Scalar(255), FILLED);
+        cout << "x: " << it->x * scaleTraj + centerx << " | y:" << it->y * scaleTraj + centery << endl;
+        circle(trajImg, Point(it->x * scaleTraj + centerx, it->y * scaleTraj + centery), 4, Scalar(255), FILLED);
     }
 
     imshow(trajName, trajImg);
