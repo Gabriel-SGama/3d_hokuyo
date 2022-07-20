@@ -6,7 +6,7 @@
 PROJ_NAME = hokuyo
 # .cpp files
 # CPP_SOURCE=$(wildcard ./src/*.cpp)
-CPP_SOURCE= src/main.cpp src/Hokuyo.cpp src/Viewer.cpp src/Logic.cpp
+CPP_SOURCE= src/main.cpp src/Hokuyo.cpp src/Viewer.cpp src/Logic.cpp src/History.cpp
 
 # .h files
 H_SOURCE=$(wildcard ./src/*.h)

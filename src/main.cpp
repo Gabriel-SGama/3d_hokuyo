@@ -15,6 +15,7 @@
 #include "Urg_driver.h"
 #include "headers/Connection_information.h"
 #include "headers/Const.hpp"
+#include "headers/History.hpp"
 #include "headers/Hokuyo.hpp"
 #include "headers/Logic.hpp"
 #include "headers/Viewer.hpp"
@@ -35,6 +36,8 @@ int main(int argc, char* argv[]) {
     Logic* logic = new Logic();
     Scan* data = new Scan();
     Viewer* viewer = new Viewer();
+    History* hist = new History();
+
     long timeStamp = 0;
     int max_size;
 
@@ -53,9 +56,24 @@ int main(int argc, char* argv[]) {
     // hokuyo->setWrite("test2.dat", max_size);
     cout << "starting..." << endl;
     // hokuyo->getData(data, timeStamp);  // clear zeros -> still zeros
+
+    LineRep* prevLine = new LineRep();
+    LineRep* currLine;
+
+    vector<int> matchesIdx;
+
+    Trajectory* trajectory;
+
     while (hokuyo->getData(data, timeStamp)) {
+        // LOGIC
         logic->defineLimit(data);
-        viewer->updateScreens(data, logic->getLineRep());
-        // hokuyo->writeFile(data);
+        currLine = logic->getLineRep();
+        matchesIdx = hist->matching(prevLine, currLine);
+
+        // VISUALIZATION
+        hist->updateTrajectory(prevLine, currLine, matchesIdx);
+        viewer->updateScreens(data, prevLine, currLine, matchesIdx, hist->getTraj());
+
+        *prevLine = *currLine;  // clone content
     }
 }
