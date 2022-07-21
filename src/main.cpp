@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
         hist->updateTrajectory(prevRep, currRep, matchesIdx);
         hist->updateVision3d(prevRep, currRep, matchesIdx);
 
-        viewer->updateScreens(data, prevRep, currRep, matchesIdx, hist->getTraj());
+        viewer->updateScreens(data, prevRep, currRep, matchesIdx, hist->getTraj(), hist->get3dobjs());
 
         *prevRep = *currRep;  // clone content
         cout << "scalex: " << scalex << " | scaley: " << scaley << endl;

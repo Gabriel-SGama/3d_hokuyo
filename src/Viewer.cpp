@@ -32,6 +32,7 @@ Viewer::Viewer() {
     namedWindow(lineName);
     namedWindow(trajName);
     namedWindow(matchName);
+    namedWindow(vis3dName);
 
     moveWindow(cPName, 0, 0);
     moveWindow(cPFtName, FULL_WIDTH / 2, FULL_HEIGHT / 2);
@@ -39,30 +40,28 @@ Viewer::Viewer() {
     moveWindow(trajName, FULL_WIDTH / 2, FULL_HEIGHT / 2);
     moveWindow(matchName, 0, 300);
 
-    // namedWindow(vis3dName);
-
     currPoints = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
     filterPts = Mat(_HEIGHT, _WIDTH, CV_8UC3, Scalar(0, 0, 0));
     lineImg = Mat(_HEIGHT, _WIDTH, CV_8UC3, Scalar(0, 0, 0));
     trajImg = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
     matchImg = Mat(_MATCH_HEIGHT, _MATCH_WIDTH, CV_8UC1, Scalar(0));
+    vis3d = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
 
     // imshow(lineName, lineImg);
     // waitKey(100);
     // cout << "img:" << lineImg.empty() << endl;
-    // vis3d = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
 }
 
 Viewer::~Viewer() {
 }
 
-void Viewer::updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, vector<int> matchesIDx, Trajectory* trajectory) {
+void Viewer::updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, vector<int> matchesIDx, Trajectory* trajectory, list<objects3d> objs) {
     updateReadScreen(points_mm);
     updateFilterScreen(points_mm);
     updateLinesScreen(currRep);
     updateTrajScreen(trajectory);
     updateMatchScreen(prevRep, currRep, matchesIDx);
-    // update3DVis(points_mm);
+    update3DVis(objs);
     waitKey(30);
 }
 
@@ -180,7 +179,7 @@ void Viewer::updateTrajScreen(Trajectory* trajectory) {
 
     std::list<cv::Point2f>::iterator it;
     for (it = trajectory->traj_list.begin(); it != trajectory->traj_list.end(); ++it) {
-        cout << "x: " << it->x * scaleTraj + centerx << " | y:" << it->y * scaleTraj + centery << endl;
+        // cout << "x: " << it->x * scaleTraj + centerx << " | y:" << it->y * scaleTraj + centery << endl;
         circle(trajImg, Point(it->x * scaleTraj + centerx, it->y * scaleTraj + centery), 4, Scalar(255), FILLED);
     }
 
@@ -209,27 +208,29 @@ void Viewer::updateMatchScreen(LineRep* prevRep, LineRep* currRep, std::vector<i
     imshow(matchName, matchImg);
 }
 
-void Viewer::update3DVis(Scan* points_mm) {
-    // TODO: make currPoints into the same orientation
-    int centerx = _WIDTH / 2;
-    int centery = _HEIGHT;
+void Viewer::update3DVis(list<objects3d> objs) {
+    const float scalex3dVis = scaley;
+    const float scaley3dVis = _HEIGHT / (_MAX_DIST * sin(hkAngle));
 
-    // vis3d.setTo(0);
+    const float scaleBright = 255.0 / (_MAX_DIST * sin(hkAngle));
 
-    // TODO: SAVE DIST FROM HOKUYO
-    for (int i = 0; i < points_mm->size; i++) {
-        int x = points_mm->pts[i].x;
-        int y = points_mm->pts[i].y;
-        float dist = x * x + y * y;
+    std::list<objects3d>::iterator it;
 
-        x = x * scalex + centerx;
-        y = y * scaley + centery;
+    vis3d.setTo(0);
 
-        // int x = points_mm->pts[i].x * scalex + centerx;
-        // int y = -points_mm->pts[i].y * scaley + centery;
-        // cout << "x: " << x << ", y: " << y << endl;
-        // cout << "points_mm[i].x: " << points_mm[i].x << ", points_mm[i].y: " << points_mm[i].y << endl;
-        // Points.at<uchar>(x, y) = 255;
-        circle(currPoints, Point(x, y), 4, Scalar(255), FILLED);
+    for (it = objs.begin(); it != objs.end(); ++it) {
+        rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255), 2);
+
+        // int x = it->mx;
+        // int y = ((it->my - _HEIGHT / 2.0) / scalex) * scaley3dVis;  // my is in pixel after being scaled
+
+        // int startx = it->mx - it->avg_width / 2;
+        // int endx = it->mx + it->avg_width / 2;
+        // int starty = it->my - it->avg_width / 2 * it->avg_angle;
+        // int endy = it->my + it->avg_width / 2 * it->avg_angle;
+
+        // line(vis3d, Point(startx, starty), Point(endx, endy), Scalar(255), 2);
     }
+
+    imshow(vis3dName, vis3d);
 }

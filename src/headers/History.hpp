@@ -9,6 +9,7 @@ class History {
     /* data */
     std::list<objects3d> objs;
     float last_x, last_y;
+    float dist_changex, dist_changey;
 
     Trajectory* trajectory;
 
@@ -22,6 +23,10 @@ class History {
     inline Trajectory* getTraj() {
         return trajectory;
     };
+
+    inline std::list<objects3d> get3dobjs() {
+        return objs;
+    }
 
     ~History();
 };

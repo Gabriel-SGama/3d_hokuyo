@@ -35,7 +35,7 @@ const float scalex = _HEIGHT / (2 * _MAX_DIST);
 const float scaley = _WIDTH / (_MAX_DIST * sin(_VISION_ANGLE * M_PI / 180.0));
 // const float scaley = _HEIGHT / (2 * _MAX_DIST);
 
-const float scaleBright = 255.0 / _MAX_DIST;
+// const float scaleBright = 255.0 / _MAX_DIST;
 const float hkAngle = 15.0 * M_PI / 180.0;
 
 const float angle_sin = sin(hkAngle);
@@ -87,5 +87,7 @@ typedef struct objects3d {
     float avg_angle;
     float mx, my;
     float avg_width;
+    float start_my;
+    cv::Point2f tleft, bright;
 
 } objects3d;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "Const.hpp"
 #include "Urg_driver.h"
 
@@ -12,11 +14,11 @@ class Viewer {
    public:
     Viewer();
     ~Viewer();
-    void updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, std::vector<int> matchesIDx, Trajectory* trajectory);
+    void updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, std::vector<int> matchesIDx, Trajectory* trajectory, std::list<objects3d> objs);
     void updateReadScreen(Scan* points_mm);
     void updateFilterScreen(Scan* points_mm);
     void updateLinesScreen(LineRep* lineRep);
     void updateTrajScreen(Trajectory* trajectory);
     void updateMatchScreen(LineRep* prevRep, LineRep* currRep, std::vector<int> matchesIDx);
-    void update3DVis(Scan* points_mm);
+    void update3DVis(std::list<objects3d> objs);
 };
