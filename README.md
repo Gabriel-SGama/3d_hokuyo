@@ -5,6 +5,17 @@
 - OpenCV4 c++
 - urg_library (1.2.6 utilizada)
 
+### Compilar e rodar:
+```
+make all
+./hokuyo NAME_OF_FILE.dat
+```
+
+### Salvar novo arquivo .dat:
+Descomentar as linhas 51 e 62, substituindo o 'NAME_OF_FILE' na **src/main.cpp** pelo nome do arquivo desejado
+
+![alt text](https://github.com/Gabriel-SGama/3d_hokuyo/blob/main/imgs/write_file.png?raw=true)
+
 
 ### Telas:
 - current points - pontos detectados pelo Hokuyo
