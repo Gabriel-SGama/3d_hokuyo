@@ -6,7 +6,7 @@ using namespace std;
 
 Logic::Logic() {
     nID = 0;
-    beginSize = 100;  // max size of lines in one frame
+    beginSize = 50;  // max size of lines in one frame
     lineRep = new LineRep();
     lineRep->lines.resize(beginSize);
     lineRep->size = 0;
@@ -92,17 +92,10 @@ void Logic::defineLimit(Scan* data) {
                 float a = num / den;
                 float b = my - a * mx;
 
-                if (abs(maxX - minX) > abs(maxY - minY)) {
-                    lineRep->lines[objID].y_start = a * minX + b;
-                    lineRep->lines[objID].y_end = a * maxX + b;
-                    lineRep->lines[objID].x_start = minX;
-                    lineRep->lines[objID].x_end = maxX;
-                } else {
-                    lineRep->lines[objID].y_start = minY;
-                    lineRep->lines[objID].y_end = maxY;
-                    lineRep->lines[objID].x_start = (minY - b) / a;
-                    lineRep->lines[objID].x_end = (maxY - b) / a;
-                }
+                lineRep->lines[objID].y_start = a * minX + b;
+                lineRep->lines[objID].y_end = a * maxX + b;
+                lineRep->lines[objID].x_start = minX;
+                lineRep->lines[objID].x_end = maxX;
 
                 // cout << "a: " << a << " b: " << b << " minX: " << minX << " maxX: " << maxX << " objID" << objID << endl;
 

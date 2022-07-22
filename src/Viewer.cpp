@@ -36,10 +36,11 @@ Viewer::Viewer() {
     namedWindow(vis3dName);
 
     moveWindow(cPName, 0, 0);
-    moveWindow(cPFtName, FULL_WIDTH / 2, FULL_HEIGHT / 2);
-    moveWindow(lineName, 0, FULL_HEIGHT / 2);
-    moveWindow(trajName, FULL_WIDTH / 2, FULL_HEIGHT / 2);
-    moveWindow(matchName, 0, 300);
+    moveWindow(cPFtName, _WIDTH, 0);
+    moveWindow(lineName, 2 * _WIDTH, 0);
+    moveWindow(matchName, 0, _HEIGHT);
+    moveWindow(vis3dName, _WIDTH, _HEIGHT);
+    moveWindow(trajName, 2 * _WIDTH, _HEIGHT);
 
     currPoints = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
     filterPts = Mat(_HEIGHT, _WIDTH, CV_8UC3, Scalar(0, 0, 0));
@@ -63,7 +64,7 @@ void Viewer::updateScreens(Scan* points_mm, LineRep* prevRep, LineRep* currRep, 
     updateTrajScreen(trajectory);
     updateMatchScreen(prevRep, currRep, matchesIDx);
     update3DVis(objs);
-    waitKey(30);
+    waitKey(40);
 }
 
 void Viewer::updateReadScreen(Scan* points_mm) {
@@ -217,9 +218,8 @@ void Viewer::update3DVis(list<objects3d> objs) {
 
     vis3d.setTo(0);
 
-    for (it = objs.begin(); it != objs.end(); ++it) {
+    for (it = objs.begin(); it != objs.end(); ++it)
         rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255 - scaleBright * it->real_my), FILLED);
-    }
 
     imshow(vis3dName, vis3d);
 }

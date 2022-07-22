@@ -17,8 +17,8 @@
 #define _WIDTH 400
 #define _MAX_DIST 4000.0
 
-#define _MATCH_HEIGHT 200
-#define _MATCH_WIDTH 200
+#define _MATCH_HEIGHT 400
+#define _MATCH_WIDTH 400
 
 #define FULL_WIDTH 1920
 #define FULL_HEIGHT 1080
