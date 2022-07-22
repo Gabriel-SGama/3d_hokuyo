@@ -18,16 +18,6 @@ Viewer::Viewer() {
     trajName = "trajectory";
     matchName = "match screen";
 
-    // get screen resolution
-    // char* command = "xrandr | grep '*'";
-    // FILE* fpipe = (FILE*)popen(command, "r");
-    // char line[256];
-    // while (fgets(line, sizeof(line), fpipe)) {
-    //     printf("%s", line);
-    //     break;
-    // }
-    // pclose(fpipe);
-
     namedWindow(cPName);
     namedWindow(cPFtName);
     namedWindow(lineName);
@@ -48,10 +38,6 @@ Viewer::Viewer() {
     trajImg = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
     matchImg = Mat(_MATCH_HEIGHT, _MATCH_WIDTH, CV_8UC1, Scalar(0));
     vis3d = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
-
-    // imshow(lineName, lineImg);
-    // waitKey(100);
-    // cout << "img:" << lineImg.empty() << endl;
 }
 
 Viewer::~Viewer() {
@@ -79,9 +65,8 @@ void Viewer::updateReadScreen(Scan* points_mm) {
     for (int i = 0; i < points_mm->size; i++) {
         int x = points_mm->pts[i].x_img;
         int y = points_mm->pts[i].y_img;
-        // cout << "read xy" << endl;
+
         circle(currPoints, Point(x, y), 1, Scalar(255), FILLED);
-        // cout << "draw circle" << endl;
     }
 
     cout << "show img" << endl;
@@ -147,12 +132,9 @@ void Viewer::updateLinesScreen(LineRep* lineRep) {
 
         // cout << "ptx: (" << minX << "," << lineRep->lines[i].b << ")" << endl;
         // cout << "pty: (" << lineRep->lines[i].maxX << "," << y_end << ")" << endl;
-        // if (lineRep->lines[i].niceLine)
 
         int objID = lineRep->lines[i].objID;
         line(lineImg, cv::Point2d(x_start, y_start), cv::Point2d(x_end, y_end), Scalar((int)hScale * lineRep->lines[i].objID, S, V), 2, FILLED);
-
-        // circle(lineImg, cv::Point2d(20 + _WIDTH / (lineRep->size + 2) * objID, _HEIGHT - 100), 4, Scalar((int)hScale * objID, S, V), FILLED);
     }
 
     cout << "showing on screen" << endl;
