@@ -1,12 +1,3 @@
-/*!
-  \example get_distance.cpp Obtains distance data
-  \author Satofumi KAMIMURA
-
-  $Id$
-*/
-
-//  g++ -O2 -I /usr/local/include/urg_cpp main.cpp Connection_information.o /usr/local/lib/liburg_cpp.a -o main `pkg-config --cflags --libs opencv4`
-
 #include <iostream>
 #include <opencv2/dnn.hpp>
 #include <opencv2/highgui.hpp>
@@ -20,8 +11,6 @@
 #include "headers/Logic.hpp"
 #include "headers/Viewer.hpp"
 #include "math_utilities.h"
-
-// #define _CAP_TIMES 30000
 
 using namespace qrk;
 using namespace std;
@@ -48,7 +37,7 @@ int main(int argc, char* argv[]) {
     max_size = hokuyo->getMaxSize();
     data->pts.resize(max_size);
 
-    // hokuyo->setWrite("wall_plane_v2.dat", max_size);
+    // hokuyo->setWrite("NAME_OF_FILE.dat", max_size);
     cout << "starting..." << endl;
 
     LineRep* prevRep = new LineRep();

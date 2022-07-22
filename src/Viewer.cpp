@@ -151,7 +151,7 @@ void Viewer::updateLinesScreen(LineRep* lineRep) {
         int objID = lineRep->lines[i].objID;
         line(lineImg, cv::Point2d(x_start, y_start), cv::Point2d(x_end, y_end), Scalar((int)hScale * lineRep->lines[i].objID, S, V), 2, FILLED);
 
-        circle(lineImg, cv::Point2d(20 + _WIDTH / (lineRep->size + 2) * objID, _HEIGHT - 100), 4, Scalar((int)hScale * objID, S, V), FILLED);
+        // circle(lineImg, cv::Point2d(20 + _WIDTH / (lineRep->size + 2) * objID, _HEIGHT - 100), 4, Scalar((int)hScale * objID, S, V), FILLED);
     }
 
     cout << "showing on screen" << endl;
@@ -175,8 +175,6 @@ void Viewer::updateTrajScreen(Trajectory* trajectory) {
     float scaleTrajy = _HEIGHT / (2.0 * leny);
 
     float scaleTraj = scaleTrajx < scaleTrajy ? scaleTrajx : scaleTrajy;
-
-    cout << "scaleTrajx: " << scaleTrajx << endl;
 
     std::list<cv::Point2f>::iterator it;
     for (it = trajectory->traj_list.begin(); it != trajectory->traj_list.end(); ++it) {
