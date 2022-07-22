@@ -2,7 +2,7 @@
 
 
 ### Dependências:
-- OpenCV4 c++
+- OpenCV4
 - urg_library (1.2.6 utilizada)
 
 ### Compilar e rodar:
