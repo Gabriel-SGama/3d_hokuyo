@@ -15,3 +15,4 @@
 - 3D visualization - visualização dos objetos (simplicados para retângulos) com a intensidade inversamente proporcional a profundidade
 
 ### Cenários:
+![Alt text](imgs/wall.jpg?raw=true "Wall")
