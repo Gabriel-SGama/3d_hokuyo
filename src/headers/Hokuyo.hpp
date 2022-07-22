@@ -10,18 +10,6 @@
 #include "Urg_driver.h"
 #include "math_utilities.h"
 
-// #define HOKUYO_READER 0
-// #define FILE_READER 1
-
-// typedef struct Points {
-//     int x, y;
-// } Points;
-
-// typedef struct Scan {
-//     std::vector<Points> pts;
-//     int size, max_size;
-// } Scan;
-
 class Hokuyo {
    private:
     qrk::Urg_driver urg;

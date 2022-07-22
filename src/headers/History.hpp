@@ -6,7 +6,6 @@
 
 class History {
    private:
-    /* data */
     std::list<objects3d> objs;
     float last_x, last_y;
     float dist_changex, dist_changey;
@@ -14,7 +13,7 @@ class History {
     Trajectory* trajectory;
 
    public:
-    History(/* args */);
+    History();
 
     std::vector<int> matching(LineRep* prevLines, LineRep* currLines);
     void updateTrajectory(LineRep* prevLines, LineRep* currLines, std::vector<int> matchesIdx);
