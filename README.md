@@ -15,4 +15,8 @@
 - 3D visualization - visualização dos objetos (simplicados para retângulos) com a intensidade inversamente proporcional a profundidade
 
 ### Cenários:
-![Alt text](imgs/wall.jpg?raw=true "Wall")
+#### Wall:
+![alt text](https://github.com/Gabriel-SGama/3d_hokuyo/blob/main/imgs/wall.jpeg?raw=true, "Wall")
+
+#### Boxs:
+![alt text](https://github.com/Gabriel-SGama/3d_hokuyo/blob/main/imgs/boxs.jpeg?raw=true, "Wall")
