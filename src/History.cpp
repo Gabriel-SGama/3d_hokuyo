@@ -94,7 +94,7 @@ void History::updateTrajectory(LineRep* prevLines, LineRep* currLines, vector<in
     }
 
     last_x += dist_changex;
-    last_y += dist_changey;
+    last_y -= dist_changey;
 
     trajectory->maxx = last_x > trajectory->maxx ? last_x : trajectory->maxx;
     trajectory->maxy = last_y > trajectory->maxy ? last_y : trajectory->maxy;
@@ -121,10 +121,13 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
             currObj.mx = currLines->lines[i].mx;
             currObj.my = currLines->lines[i].my;
             currObj.start_my = currObj.my;
-
+            currObj.resetID = false;
             currObj.avg_width = currLines->lines[i].maxX - currLines->lines[i].minX;
 
-            int y = ((currObj.my - _HEIGHT / 2.0) / scalex) * scaley3dVis;
+            int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+
+            // currObj.dist = (currObj.my - _HEIGHT / 2.0) / -scalex * angle_cos;
+            currObj.dist = sqrt(pow((currObj.my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
 
             y *= sin(hkAngle);
 
@@ -139,46 +142,104 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
 
     list<objects3d>::iterator it;
 
-    float avg_mean_weight = 0.5;
+    for (it = objs.begin(); it != objs.end(); ++it)
+        it->resetID = true;
 
-    // add matches objects
-    int i;
-    for (it = objs.begin(), i = 0; it != objs.end(); ++it, ++i) {
-        if (matchesIdx[i] == -1) {
-            it->lastObjID = -1;
-            continue;
+    bool isObj;
+
+    for (int i = 0; i < matchesIdx.size(); i++) {
+        if (matchesIdx[i] == -1) continue;
+
+        isObj = false;
+
+        for (it = objs.begin(); it != objs.end(); ++it) {
+            if (it->lastObjID != i || !it->resetID) continue;
+
+            isObj = true;
+            it->resetID = false;
+
+            const int currIdx = matchesIdx[i];
+
+            it->lastObjID = currLines->lines[currIdx].objID;
+
+            // currObj.avg_angle = currLines->lines[i].a;
+
+            it->mx = (it->mx - dist_changex + currLines->lines[currIdx].mx) / 2.0;
+
+            float curr_widht = (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (((it->start_my - _HEIGHT / 2.0) / scalex) * scaley3dVis) / (((currLines->lines[currIdx].my - _HEIGHT / 2.0) / scalex) * scaley3dVis);
+
+            it->avg_width = 0.9 * it->avg_width + 0.1 * curr_widht;
+            // it->avg_width = it->avg_width + (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (it->my / (dist_changey + it->my));
+            // it->avg_width /= 2.0;
+
+            it->my = (it->my - dist_changey + currLines->lines[currIdx].my) / 2.0;
+
+            int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+
+            float height = _HEIGHT - y * sin(hkAngle);
+
+            it->tleft.y = (it->tleft.y > height) ? it->tleft.y : height;
+            it->bright.y = (it->bright.y < height) ? it->bright.y : height;
+
+            it->tleft = Point(it->mx - it->avg_width / 2, it->tleft.y);
+            it->bright = Point(it->mx + it->avg_width / 2, it->bright.y);
+            break;
         }
 
+        if (isObj) continue;
+        // continue;
+        // adds new object
+
+        objects3d currObj;
         const int currIdx = matchesIdx[i];
 
-        it->lastObjID = currLines->lines[currIdx].objID;
+        currObj.avg_angle = currLines->lines[currIdx].a;
+        currObj.lastObjID = currLines->lines[currIdx].objID;
+        currObj.mx = currLines->lines[currIdx].mx;
+        currObj.my = currLines->lines[currIdx].my;
+        currObj.start_my = currObj.my;
 
-        // currObj.avg_angle = currLines->lines[i].a;
+        currObj.resetID = false;
 
-        it->mx = (it->mx - dist_changex + currLines->lines[currIdx].mx) / 2.0;
+        currObj.avg_width = currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX;
 
-        it->avg_width = (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (((it->start_my - _HEIGHT / 2.0) / scalex) * scaley3dVis) / (((currLines->lines[currIdx].my - _HEIGHT / 2.0) / scalex) * scaley3dVis);
-        // it->avg_width = it->avg_width + (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (it->my / (dist_changey + it->my));
-        // it->avg_width /= 2.0;
+        int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+        currObj.dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
 
-        it->my = (it->my - dist_changey + currLines->lines[currIdx].my) / 2.0;
-
-        int y = ((it->my - _HEIGHT / 2.0) / scalex) * scaley3dVis;
+        // currObj.dist = (currObj.my - _HEIGHT / 2.0) / -scalex;
 
         y *= sin(hkAngle);
 
-        y = _HEIGHT - y;  // proper plot in OPENCV
+        currObj.tleft = Point(currObj.mx - currObj.avg_width / 2, _HEIGHT - y);
+        currObj.bright = Point(currObj.mx + currObj.avg_width / 2, _HEIGHT - y - 2);
 
-        it->tleft.y = (it->tleft.y > y) ? it->tleft.y : y;
-        it->bright.y = (it->bright.y < y) ? it->bright.y : y;
-
-        it->tleft = Point(it->mx - it->avg_width / 2, it->tleft.y);
-        it->bright = Point(it->mx + it->avg_width / 2, it->bright.y);
-
-        // it->tleft = Point(it->mx - it->avg_width / 2, _HEIGHT - y);
-        // it->bright = Point(it->mx + it->avg_width / 2, _HEIGHT - y - 2);
-
-        // media movel e correção do comprimento da linha
-        // deslocamento de todos elementos de acordo com a trajetoria
+        objs.push_back(currObj);
     }
+
+    for (it = objs.begin(); it != objs.end(); ++it) {
+        if (it->resetID) {
+            it->lastObjID = -1;
+
+            it->mx -= -dist_changex;
+
+            it->my += dist_changey;
+            // it->dist = (it->my - _HEIGHT / 2.0) / -scalex;
+
+            int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+
+            float height = _HEIGHT - y * sin(hkAngle);
+
+            it->tleft.y = (it->tleft.y > height) ? it->tleft.y : height;
+            it->bright.y = (it->bright.y < height) ? it->bright.y : height;
+
+            it->tleft = Point(it->mx - it->avg_width / 2, it->tleft.y);
+            it->bright = Point(it->mx + it->avg_width / 2, it->bright.y);
+        }
+
+        it->resetID = true;
+    }
+
+    float avg_mean_weight = 0.5;
 }

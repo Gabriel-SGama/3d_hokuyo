@@ -210,17 +210,18 @@ void Viewer::updateMatchScreen(LineRep* prevRep, LineRep* currRep, std::vector<i
 
 void Viewer::update3DVis(list<objects3d> objs) {
     const float scalex3dVis = scaley;
-    const float scaley3dVis = _HEIGHT / (_MAX_DIST * sin(hkAngle));
+    const float scaley3dVis = _HEIGHT / (_MAX_DIST * angle_sin);
 
-    const float scaleBright = 255.0 / (_MAX_DIST * sin(hkAngle));
+    const float scaleBright = 255.0 / _MAX_DIST;
 
     std::list<objects3d>::iterator it;
 
     vis3d.setTo(0);
 
-    for (it = objs.begin(); it != objs.end(); ++it) {
-        rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255), 2);
+    // Mat vis3dtemp = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
 
+    for (it = objs.begin(); it != objs.end(); ++it) {
+        rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255 - scaleBright * it->dist), FILLED);
         // int x = it->mx;
         // int y = ((it->my - _HEIGHT / 2.0) / scalex) * scaley3dVis;  // my is in pixel after being scaled
 

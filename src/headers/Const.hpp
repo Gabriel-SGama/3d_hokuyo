@@ -26,10 +26,10 @@
 #define _VISION_ANGLE 45
 
 #define _MAX_ANGLE_DIFF 0.1
-#define _MAX_DIST_DIFF 70  // mm
+#define _MAX_DIST_DIFF 40  // mm
 #define _MIN_PTS_2OBJ 20
 
-#define _MATCHING_CENTER_DIST 15
+#define _MATCHING_CENTER_DIST 20
 
 const float scalex = _HEIGHT / (2 * _MAX_DIST);
 const float scaley = _WIDTH / (_MAX_DIST * sin(_VISION_ANGLE * M_PI / 180.0));
@@ -88,6 +88,10 @@ typedef struct objects3d {
     float mx, my;
     float avg_width;
     float start_my;
+    float dist;
+
+    bool resetID;
+
     cv::Point2f tleft, bright;
 
 } objects3d;

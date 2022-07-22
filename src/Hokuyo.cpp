@@ -98,7 +98,7 @@ int Hokuyo::read_file(Scan *data, long &timeStamp) {
         data->pts[i].dist = (int)sqrt(x * x + y * y);
         data->pts[i].angle = atan2(y, x);
         data->pts[i].x_img = round(-y * scaley + _WIDTH / 2.0);
-        data->pts[i].y_img = round(x * scalex + _HEIGHT / 2.0);
+        data->pts[i].y_img = round(-x * scalex + _HEIGHT / 2.0);
 
         // cout << "(" << x << "," << y << ")" << endl;
         i++;
