@@ -8,7 +8,8 @@
 ### Compilar e rodar:
 ```
 make all
-./hokuyo NAME_OF_FILE.dat
+./hokuyo NAME_OF_FILE.dat #usa os dados salvos
+sudo ./hokuyo #le diretamente do hokuyo - necessita 'sudo' ou mudar acesso da porta utilizada
 ```
 
 ### Salvar novo arquivo .dat:
