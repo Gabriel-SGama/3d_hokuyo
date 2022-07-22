@@ -15,19 +15,6 @@ Logic::Logic() {
 Logic::~Logic() {
 }
 
-bool checkLineDiff(int maxX, int minX, int maxY, int minY, int a, int b, int x_img, int y_img, bool niceLine) {
-    int diffmaxX = x_img - maxX;
-    int diffminX = x_img - minX;
-    int diffmaxY = y_img - maxY;
-    int diffminY = y_img - minY;
-
-    float errY = abs(y_img - a * x_img + b);
-
-    // cout << "errY: " << errY << endl;
-    // return ;
-    return errY < 7000;
-}
-
 void Logic::defineLimit(Scan* data) {
     int x = data->pts[0].x_img;
     int y = data->pts[0].y_img;
@@ -87,7 +74,7 @@ void Logic::defineLimit(Scan* data) {
             // float y_end = a * maxX + b;
         }
 
-        if (abs(dist - data->pts[i].dist) > _MAX_DIST_DIFF || i == data->size - 1) {  //|| (linePred && !checkLineDiff(maxX, minX, maxY, minY, apred, bpred, x, y, niceLine))) {
+        if (abs(dist - data->pts[i].dist) > _MAX_DIST_DIFF || i == data->size - 1) {
             if (quantPts < _MIN_PTS_2OBJ) {
                 for (int k = 0; k < quantPts; k++) {
                     data->pts[i - 1 - k].objID = -1;
@@ -95,7 +82,6 @@ void Logic::defineLimit(Scan* data) {
 
             } else {  // detect object successfully
                 cout << "defined object " << objID << endl;
-                // niceLine = checkLineDiff(maxX, minX, maxY, minY, apred, bpred, x, y, niceLine);
 
                 mx = sumx / quantPts;
                 my = sumy / quantPts;
@@ -124,20 +110,15 @@ void Logic::defineLimit(Scan* data) {
                 lineRep->lines[objID].b = b;
                 lineRep->lines[objID].mx = mx;
                 lineRep->lines[objID].my = my;
+                lineRep->lines[objID].real_my = (my - _HEIGHT / 2.0) / -scalex;  // converts back to mm
                 lineRep->lines[objID].minX = minX;
                 lineRep->lines[objID].maxX = maxX;
                 lineRep->lines[objID].minY = minY;
                 lineRep->lines[objID].maxY = maxY;
                 lineRep->lines[objID].objID = objID;  // last object
                 lineRep->lines[objID].niceLine = niceLine;
-                // line(image, cv::Point2d(0, b), cv::Point2d(points[n - 1].x, y_end), Scalar(125), 3);
 
                 objID += 1;
-
-                // if (objID > beginSize) { //do this the right way
-                //     beginSize *= 2;
-                //     line.reserve(beginSize);
-                // }
             }
 
             // reset mmq values
@@ -183,13 +164,4 @@ void Logic::defineLimit(Scan* data) {
     lineRep->size = objID;
     cout << "Number of objects: " << data->nIDs << endl;
     cout << "Number of points: " << data->size << endl;
-}
-
-void Logic::descriptor(Scan* data) {
-}
-
-void Logic::matching(Scan* data) {
-}
-
-void Logic::predDist(Scan* data) {
 }

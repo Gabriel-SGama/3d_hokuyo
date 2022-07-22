@@ -83,7 +83,8 @@ void History::updateTrajectory(LineRep* prevLines, LineRep* currLines, vector<in
             continue;
 
         dist_changex += currLines->lines[matchesIdx[i]].mx - prevLines->lines[i].mx;
-        dist_changey += currLines->lines[matchesIdx[i]].my - prevLines->lines[i].my;
+        // dist_changey += currLines->lines[matchesIdx[i]].my - prevLines->lines[i].my;
+        dist_changey += currLines->lines[matchesIdx[i]].real_my - prevLines->lines[i].real_my;
 
         nmatches += 1;
     }
@@ -94,7 +95,7 @@ void History::updateTrajectory(LineRep* prevLines, LineRep* currLines, vector<in
     }
 
     last_x += dist_changex;
-    last_y -= dist_changey;
+    last_y += dist_changey;
 
     trajectory->maxx = last_x > trajectory->maxx ? last_x : trajectory->maxx;
     trajectory->maxy = last_y > trajectory->maxy ? last_y : trajectory->maxy;
@@ -120,14 +121,19 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
             currObj.lastObjID = currLines->lines[i].objID;
             currObj.mx = currLines->lines[i].mx;
             currObj.my = currLines->lines[i].my;
-            currObj.start_my = currObj.my;
+            currObj.real_my = currLines->lines[i].real_my;
+            // currObj.start_my = currObj.my;
+            currObj.start_my = currObj.real_my;
             currObj.resetID = false;
-            currObj.avg_width = currLines->lines[i].maxX - currLines->lines[i].minX;
+            currObj.avg_width = (currLines->lines[i].maxX - currLines->lines[i].minX);
 
-            int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            // int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            int y = currObj.real_my * scaley3dVis;
 
             // currObj.dist = (currObj.my - _HEIGHT / 2.0) / -scalex * angle_cos;
-            currObj.dist = sqrt(pow((currObj.my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // currObj.dist = sqrt(pow((currObj.my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // currObj.dist = sqrt(pow(currObj.real_my, 2) + pow(y / scaley3dVis, 2));
+            // currObj.dist = currObj.real_my;
 
             y *= sin(hkAngle);
 
@@ -166,16 +172,20 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
 
             it->mx = (it->mx - dist_changex + currLines->lines[currIdx].mx) / 2.0;
 
-            float curr_widht = (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (((it->start_my - _HEIGHT / 2.0) / scalex) * scaley3dVis) / (((currLines->lines[currIdx].my - _HEIGHT / 2.0) / scalex) * scaley3dVis);
+            // float curr_widht = (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (((it->start_my - _HEIGHT / 2.0) / scalex) * scaley3dVis) / (((currLines->lines[currIdx].my - _HEIGHT / 2.0) / scalex) * scaley3dVis);
+            float curr_widht = (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (it->start_my / currLines->lines[currIdx].real_my);
 
             it->avg_width = 0.9 * it->avg_width + 0.1 * curr_widht;
             // it->avg_width = it->avg_width + (currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX) * (it->my / (dist_changey + it->my));
             // it->avg_width /= 2.0;
 
-            it->my = (it->my - dist_changey + currLines->lines[currIdx].my) / 2.0;
+            // it->my = (it->my - dist_changey + currLines->lines[currIdx].my) / 2.0;
+            it->real_my = (it->real_my - dist_changey + currLines->lines[currIdx].real_my) / 2.0;
+            // int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            int y = it->real_my * scaley3dVis;
 
-            int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
-            it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // it->dist = it->real_my;
 
             float height = _HEIGHT - y * sin(hkAngle);
 
@@ -198,14 +208,19 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
         currObj.lastObjID = currLines->lines[currIdx].objID;
         currObj.mx = currLines->lines[currIdx].mx;
         currObj.my = currLines->lines[currIdx].my;
-        currObj.start_my = currObj.my;
+        currObj.real_my = currLines->lines[currIdx].real_my;
+        // currObj.start_my = currObj.my;
+        currObj.start_my = currObj.real_my;
 
         currObj.resetID = false;
 
         currObj.avg_width = currLines->lines[currIdx].maxX - currLines->lines[currIdx].minX;
 
-        int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
-        currObj.dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+        // int y = ((currObj.my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+        int y = currObj.real_my * scaley3dVis;
+
+        // currObj.dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+        // currObj.dist = currObj.real_my;
 
         // currObj.dist = (currObj.my - _HEIGHT / 2.0) / -scalex;
 
@@ -223,11 +238,15 @@ void History::updateVision3d(LineRep* prevLines, LineRep* currLines, vector<int>
 
             it->mx -= -dist_changex;
 
-            it->my += dist_changey;
+            // it->my += dist_changey;
+            it->real_my += dist_changey;
             // it->dist = (it->my - _HEIGHT / 2.0) / -scalex;
 
-            int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
-            it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // int y = ((it->my - _HEIGHT / 2.0) / -scalex) * scaley3dVis;
+            int y = it->real_my * scaley3dVis;
+
+            // it->dist = sqrt(pow((it->my - _HEIGHT / 2.0) / -scalex, 2) + pow(y / scaley3dVis, 2));
+            // it->dist = it->real_my;
 
             float height = _HEIGHT - y * sin(hkAngle);
 

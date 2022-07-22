@@ -17,6 +17,7 @@ Viewer::Viewer() {
     lineName = "line screen";
     trajName = "trajectory";
     matchName = "match screen";
+
     // get screen resolution
     // char* command = "xrandr | grep '*'";
     // FILE* fpipe = (FILE*)popen(command, "r");
@@ -218,19 +219,8 @@ void Viewer::update3DVis(list<objects3d> objs) {
 
     vis3d.setTo(0);
 
-    // Mat vis3dtemp = Mat(_HEIGHT, _WIDTH, CV_8UC1, Scalar(0));
-
     for (it = objs.begin(); it != objs.end(); ++it) {
-        rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255 - scaleBright * it->dist), FILLED);
-        // int x = it->mx;
-        // int y = ((it->my - _HEIGHT / 2.0) / scalex) * scaley3dVis;  // my is in pixel after being scaled
-
-        // int startx = it->mx - it->avg_width / 2;
-        // int endx = it->mx + it->avg_width / 2;
-        // int starty = it->my - it->avg_width / 2 * it->avg_angle;
-        // int endy = it->my + it->avg_width / 2 * it->avg_angle;
-
-        // line(vis3d, Point(startx, starty), Point(endx, endy), Scalar(255), 2);
+        rectangle(vis3d, Rect(it->tleft, it->bright), Scalar(255 - scaleBright * it->real_my), FILLED);
     }
 
     imshow(vis3dName, vis3d);

@@ -33,14 +33,13 @@
 
 const float scalex = _HEIGHT / (2 * _MAX_DIST);
 const float scaley = _WIDTH / (_MAX_DIST * sin(_VISION_ANGLE * M_PI / 180.0));
-// const float scaley = _HEIGHT / (2 * _MAX_DIST);
 
-// const float scaleBright = 255.0 / _MAX_DIST;
 const float hkAngle = 15.0 * M_PI / 180.0;
 
 const float angle_sin = sin(hkAngle);
 const float angle_cos = cos(hkAngle);
 
+// --------- STRUCTS ---------
 typedef struct Points {
     int real_x, dist;  // 3d dimension (angle pre defined)
     int x, y;          // converted to the xy plane
@@ -51,7 +50,8 @@ typedef struct Points {
 
 typedef struct Line {
     float a, b;
-    float mx, my;  // mean cord values
+    float mx, my;            // mean cord values in pixels
+    float real_mx, real_my;  // mean cord values in mm
     float std;
     float resi;
     float x_start, x_end, y_start, y_end;
@@ -85,10 +85,9 @@ typedef struct objects3d {
     int lastObjID;
 
     float avg_angle;
-    float mx, my;
+    float mx, my, real_my;
     float avg_width;
     float start_my;
-    float dist;
 
     bool resetID;
 

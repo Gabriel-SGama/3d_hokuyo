@@ -21,12 +21,7 @@
 #include "headers/Viewer.hpp"
 #include "math_utilities.h"
 
-#define _CAP_TIMES 30000
-// #define _HEIGHT 800
-// #define _WIDTH 800
-
-// const float scalex = _WIDTH / 4000.0;
-// const float scaley = _HEIGHT / 4000.0;
+// #define _CAP_TIMES 30000
 
 using namespace qrk;
 using namespace std;
@@ -55,7 +50,6 @@ int main(int argc, char* argv[]) {
 
     // hokuyo->setWrite("wall_plane_v2.dat", max_size);
     cout << "starting..." << endl;
-    // hokuyo->getData(data, timeStamp);  // clear zeros -> still zeros
 
     LineRep* prevRep = new LineRep();
     LineRep* currRep;
@@ -66,6 +60,7 @@ int main(int argc, char* argv[]) {
 
     while (hokuyo->getData(data, timeStamp)) {
         // hokuyo->writeFile(data);
+
         // LOGIC
         logic->defineLimit(data);
         currRep = logic->getLineRep();
@@ -78,6 +73,5 @@ int main(int argc, char* argv[]) {
         viewer->updateScreens(data, prevRep, currRep, matchesIdx, hist->getTraj(), hist->get3dobjs());
 
         *prevRep = *currRep;  // clone content
-        cout << "scalex: " << scalex << " | scaley: " << scaley << endl;
     }
 }
